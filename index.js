@@ -51,11 +51,33 @@ function getCurrentTime() {
 
 setInterval(getCurrentTime, 1000);
 
-navigator.geolocation.getCurrentPosition(async position => {
-    try {
-        const res = await fetch(`https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=imperial`);
-        if (!res.ok) {
-            throw Error("Weather data not available");
-        }
-        const data = await res.json();
-        const iconUrl = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+navigator.geolocation.getCurrentPosition(async (position) => {
+  try {
+    const res = await fetch(
+      `https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=imperial`
+    );
+    if (!res.ok) {
+      throw Error("Weather data not available");
+    }
+    const data = await res.json();
+    const iconUrl = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    // Safely create weather elements
+    const weatherDiv = document.getElementById("weather");
+    weatherDiv.innerHTML = ""; // Clear the div before adding new elements
+
+    const img = document.createElement("img");
+    img.src = iconUrl;
+    const tempP = document.createElement("p");
+    tempP.textContent = `${Math.round(data.main.temp)}º`;
+    tempP.className = "weather-temp";
+    const cityP = document.createElement("p");
+    cityP.textContent = data.name;
+    cityP.className = "weather-city";
+
+    weatherDiv.appendChild(img);
+    weatherDiv.appendChild(tempP);
+    weatherDiv.appendChild(cityP);
+  } catch (err) {
+    console.error(err);
+  }
+});
